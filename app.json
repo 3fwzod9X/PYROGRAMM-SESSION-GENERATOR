@@ -1,0 +1,26 @@
+{
+  "name": "pyro-tel-session-generator",
+  "description": "Generates Pyrogram and Telethon session strings using Telegram API ID and hash.",
+  "repository": "https://github.com/SUHAIB-RASHID-DAR/PYROGRAMM-SESSION-GENERATOR.git",
+  "keywords": ["telegram", "pyrogram", "telethon", "api", "session", "string"],
+  "env": {
+    "API_ID": {
+      "description": "Telegram API ID",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Telegram API hash",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Telegram Bot token",
+      "required": true
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "stack": "heroku-20"
+}
