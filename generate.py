@@ -5,11 +5,11 @@ from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-api_id = os.environ.get('API_ID')
-api_hash = os.environ.get('API_HASH')
+api_id = "10412514"
+api_hash = "4d55a7064ad72adcfa8944f505453a8c"
 bot_token = os.environ.get('BOT_TOKEN')
 
-pyro_client = Client(":memory:", api_id, api_hash, bot_token=bot_token)
+pyro_client = Client(":memory:", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 tel_client = TelegramClient(StringSession(), api_id, api_hash)
 
 
