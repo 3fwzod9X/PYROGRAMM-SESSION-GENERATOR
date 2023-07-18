@@ -115,4 +115,4 @@ async def process_tel_phone_number(message):
     await tel_client.send_message(chat_id, f'Here is your Telethon session string:\n`{session_string}`')
 
 
-pyro_client.run()
+asyncio.get_event_loop().run_until_complete(pyro_client.start())
