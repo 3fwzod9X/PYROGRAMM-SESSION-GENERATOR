@@ -10,7 +10,7 @@ api_hash = os.environ.get('API_HASH')
 bot_token = os.environ.get('BOT_TOKEN')
 
 pyro_client = Client(":memory:", api_id, api_hash, bot_token=bot_token)
-tel_client = TelegramClient(StringSession(), api_id, api_hash, bot_token=bot_token)
+tel_client = TelegramClient(StringSession(), api_id, api_hash)
 
 
 @pyro_client.on_message(filters.command('start'))
