@@ -1,7 +1,7 @@
 import os
 import asyncio
 from pyrogram import Client, filters
-from telethon import TelegramClient
+from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -10,16 +10,17 @@ api_hash = os.environ.get('API_HASH')
 bot_token = os.environ.get('BOT_TOKEN')
 
 pyro_client = Client(":memory:", api_id, api_hash, bot_token=bot_token)
-tel_client = TelegramClient(StringSession(), api_id, api_hash)
+tel_client = TelegramClient(StringSession(), api_id, api_hash, bot_token=bot_token)
 
 
 @pyro_client.on_message(filters.command('start'))
 async def start_command_handler(client, message):
     await message.reply('Hi, I can help you generate Pyrogram and Telethon string sessions. Please select an option:',
-                        reply_markup=types.InlineKeyboardMarkup([[
-                            types.InlineKeyboardButton('Pyrogram', callback_data='pyro'),
-                            types.InlineKeyboardButton('Telethon', callback_data='tel')
+                        reply_markup=InlineKeyboardMarkup([[
+                            InlineKeyboardButton('Pyrogram', callback_data='pyro'),
+                            InlineKeyboardButton('Telethon', callback_data='tel')
                         ]]))
+
 
 @pyro_client.on_message(filters.command('pyro'))
 async def pyro_command_handler(client, message):
@@ -50,11 +51,22 @@ async def pyro_command_handler(client, message):
 
     try:
         await client.sign_in(phone_number.text, code.phone_code_hash, code_text.text)
-        session_string = await client.export_session_string()
     except Exception as e:
-        await client.send_message(chat_id, f'Error generating session string: {str(e)}')
-        return
+        if "SESSION_PASSWORD_NEEDED" in str(e):
+            await client.send_message(chat_id, 'Please enter your password:')
+            password = await client.ask(chat_id)
 
+            try:
+                await client.check_password(password.text)
+                await client.sign_in(phone_number.text, code.phone_code_hash, code_text.text, password=password.text)
+            except Exception as e:
+                await client.send_message(chat_id, f'Error signing in: {str(e)}')
+                return
+        else:
+            await client.send_message(chat_id, f'Error signing in: {str(e)}')
+            return
+
+    session_string = await client.export_session_string()
     await client.send_message(chat_id, f'Here is your Pyrogram session string:\n\n```\n{session_string}\n```')
 
 
@@ -89,11 +101,22 @@ async def tel_command_handler(client, message):
         try:
             await tel_client.sign_in(phone_number.text, code_text.text)
         except Exception as e:
-            await client.send_message(chat_id, f'Error signing in: {str(e)}')
-            return
+            if "SESSION_PASSWORD_NEEDED" in str(e):
+                await client.send_message(chat_id, 'Please enter your password:')
+                password = await client.ask(chat_id)
+
+                try:
+                    await tel_client.check_password(password.text)
+                    await tel_client.sign_in(phone_number.text, code_text.text, password=password.text)
+                except Exception as e:
+                    await client.send_message(chat_id, f'Error signing in: {str(e)}')
+                    return
+            else:
+                await client.send_message(chat_id, f'Error signing in: {str(e)}')
+                return
 
     session_string = tel_client.session.save()
     await client.send_message(chat_id, f'Here is your Telethon session string:\n`{session_string}`')
 
-pyro_client.run()
 
+pyro_client.run()
