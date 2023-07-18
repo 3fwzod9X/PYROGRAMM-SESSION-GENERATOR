@@ -7,7 +7,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 api_id = "10412514"
 api_hash = "4d55a7064ad72adcfa8944f505453a8c"
-bot_token = os.environ.get('BOT_TOKEN')
+bot_token = os.environ.get('BOT_TOKEN', '6182287341:AAFhYl99bc82mDQg7t6VaExxD_9Ds2q3wbs')
 
 pyro_client = Client(":memory:", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 tel_client = TelegramClient(StringSession(), api_id=api_id, api_hash=api_hash)
