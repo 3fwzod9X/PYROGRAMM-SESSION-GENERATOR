@@ -27,11 +27,34 @@ async def callback_handler(client, query):
     if query.data == 'pyro':
         chat_id = query.message.chat.id
         await client.send_message(chat_id, 'Please enter your phone number (with country code):')
-        await pyro_client.register_next_step_handler(query.message, process_pyro_phone_number)
+        await pyro_client.send_message(chat_id, 'pyro')
+        pyro_client.process_chats()
+
     elif query.data == 'tel':
         chat_id = query.message.chat.id
         await client.send_message(chat_id, 'Please enter your phone number (with country code):')
-        await pyro_client.register_next_step_handler(query.message, process_tel_phone_number)
+        await pyro_client.send_message(chat_id, 'tel')
+        pyro_client.process_chats()
+
+
+@pyro_client.on_message(filters.private)
+async def private_message_handler(client, message):
+    chat_id = message.chat.id
+    text = message.text
+
+    if text == 'pyro':
+        await client.send_message(chat_id, 'Please enter your phone number (with country code):')
+        pyro_client.set_user_value(chat_id, 'option', 'pyro')
+
+    elif text == 'tel':
+        await client.send_message(chat_id, 'Please enter your phone number (with country code):')
+        pyro_client.set_user_value(chat_id, 'option', 'tel')
+
+    elif pyro_client.get_user_value(chat_id, 'option') == 'pyro':
+        await process_pyro_phone_number(message)
+
+    elif pyro_client.get_user_value(chat_id, 'option') == 'tel':
+        await process_tel_phone_number(message)
 
 
 async def process_pyro_phone_number(message):
