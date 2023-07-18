@@ -39,7 +39,7 @@ async def process_pyro_phone_number(message):
     phone_number = message.text
 
     try:
-        await pyro_client.start()
+        await pyro_client.start(phone_number=phone_number)
     except Exception as e:
         await pyro_client.send_message(chat_id, f'Error starting client: {str(e)}')
         return
